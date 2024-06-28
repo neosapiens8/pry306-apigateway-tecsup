@@ -1,0 +1,19 @@
+server:
+  port: 8090 # puerto de acceso
+
+spring:
+  application:
+    name: wapigateway # nombre de la aplicación en un entorno Spring para microservicios
+  cloud: # configurando el ruteo del gateway
+    gateway:
+      routes:
+        - id: apigateway-mscustomer # identificador de la ruta creada
+          uri: lb://wmscustomer # URI de destino para esta ruta, puente de acceso al microservicio "wmscustomer"
+          predicates:
+            - Path=/api/ms-customer/** # Esta ruta se activará para cualquier solicitud cuya URL comience con "/api/ms-customer/" (** es un comodín)
+          filters: StripPrefix=2 # elimina dos primeros segmentos del camino (path) de URL antes de reenviar la solicitud al servicio de destino (Ejm: antes "/api/ms-customer/customer/crear", despues "/customer/crear")
+
+eureka:
+  client:
+    service-url: # especifica URLs de los servidores Eureka donde el cliente debe registrarse y desde donde debe recuperar la información del registro de servicios
+      defaultZone: http://localhost:8761/eureka # URL del servidor Eureka donde este cliente debe registrarse y desde donde debe obtener información de otros servicios registrados
